@@ -1,7 +1,12 @@
 package github.tiger.xmsg.UI;
 
+import github.tiger.xmsg.UI.Base.BaseActivity;
+
 /**
- * Created by Administrator on 2016/4/20.
+ * Author: Tiger zhang
+ * Date:   2016/4/21
+ * Email:  Tiger.zhag@gmail.com
+ * GitHub: https://github.com/TigerZhag
  */
-public class ContactListActivity {
+public class ContactListActivity extends BaseActivity{
 }
