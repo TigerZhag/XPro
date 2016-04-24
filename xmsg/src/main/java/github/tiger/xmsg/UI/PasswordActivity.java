@@ -8,6 +8,9 @@ import android.os.Message;
 import android.os.Process;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.view.KeyEvent;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
 
@@ -90,6 +93,39 @@ public class PasswordActivity extends Activity {
                 System.exit(0);
             }
         }
+    }
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.menu_password, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle action bar item clicks here. The action bar will
+        // automatically handle clicks on the Home/Up button, so long
+        // as you specify a parent activity in AndroidManifest.xml.
+        int id = item.getItemId();
+
+        //noinspection SimplifiableIfStatement
+        if (id == R.id.action_resetPsw) {
+            SetPasswordActivity.launch(this);
+            return true;
+        }
+
+        return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        if (keyCode == KeyEvent.KEYCODE_BACK){
+            Intent var1 = new Intent("android.intent.action.MAIN");
+            var1.addFlags(268435456);
+            var1.addCategory("android.intent.category.HOME");
+            this.startActivity(var1);
+        }
+        return super.onKeyDown(keyCode, event);
     }
 
     public static void launch(Activity activity){

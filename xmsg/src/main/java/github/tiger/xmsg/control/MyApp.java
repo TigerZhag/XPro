@@ -5,6 +5,8 @@ import android.app.Application;
 import android.os.Bundle;
 
 import github.tiger.xmsg.UI.PasswordActivity;
+import github.tiger.xmsg.UI.SetPasswordActivity;
+import github.tiger.xmsg.safe.PasswordManager;
 
 /**
  * Author: Tiger zhang
@@ -31,7 +33,11 @@ public class MyApp extends Application {
             @Override
             public void onActivityResumed(Activity activity) {
                 if (activityNum == 0){
-                    PasswordActivity.launch(activity);
+                    if (!PasswordManager.getPassword().equals("")){
+                        PasswordActivity.launch(activity);
+                    }else {
+                        SetPasswordActivity.launch(activity);
+                    }
                 }
                 activityNum += 1;
             }
@@ -56,6 +62,8 @@ public class MyApp extends Application {
 
             }
         });
+
     }
     private int activityNum = 0;
+    public String myPsw;
 }

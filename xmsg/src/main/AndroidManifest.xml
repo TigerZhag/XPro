@@ -21,8 +21,8 @@
             </intent-filter>
         </activity>
 
-        <activity android:name=".UI.PasswordActivity" android:launchMode="singleInstance" android:theme="@style/Theme.AppCompat.Light.NoActionBar"/>
-        <activity android:name=".UI.SetPasswordActivity"/>
+        <activity android:name=".UI.PasswordActivity" android:label="@string/input_password" android:launchMode="singleInstance" />
+        <activity android:name=".UI.SetPasswordActivity" android:label="@string/set_password"/>
         <activity android:name=".UI.ContactListActivity"/>
         <activity android:name=".UI.ContactDetailActivity"/>
 
