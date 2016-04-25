@@ -1,60 +1,42 @@
 package github.tiger.xmsg.model;
 
-import android.os.Parcel;
-import android.os.Parcelable;
-
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.Serializable;
 import java.nio.ByteBuffer;
 
 /**
  * Author: Tiger zhang
- * Date:   2016/4/21 0021
+ * Date:   2016/4/25 0025
  * Email:  Tiger.zhag@gmail.com
- *
- * 封装的Message类
+ * Github: https://github.com/TigerZhag
  */
 
-public class Message implements Parcelable{
-    public int type;
-    public String from;
-    public String content;
+/**
+ * id 标示它的唯一性
+ * thread_id: 同一个会话中他们的thread_id是一样的，也就是说通过thread_id就可以知道A与B在聊天还是 A与C在聊天
+ * person：发件人，返回一个数字就是联系人列表里的序号，陌生人为null
+ * date :这条消息发送或接收的时间
+ * read:  0 表示未读 1表示已读
+ * protocol：协议 0SMS_PROTO, 1 MMS_PROTO
+ * status：状态 -1接收，0完成，64等待，128失败
+ * type : 1表示接收 2表示发出
+ *  body  表示消息的内容
+ * service_center短信服务中心号码编号
+ */
+public class Message {
+    public String address;
+    public int intPerson;
+    public long date;
+    public int readType;
+    public int sendType;
 
-    // 1.必须实现Parcelable.Creator接口,否则在获取Person数据的时候，会报错，如下：
-    // android.os.BadParcelableException:
-    // Parcelable protocol requires a Parcelable.Creator object called  CREATOR on class com.um.demo.Person
-    // 2.这个接口实现了从Percel容器读取Person数据，并返回Person对象给逻辑层使用
-    // 3.实现Parcelable.Creator接口对象名必须为CREATOR，不如同样会报错上面所提到的错；
-    // 4.在读取Parcel容器里的数据事，必须按成员变量声明的顺序读取数据，不然会出现获取数据出错
-    // 5.反序列化对象
-    public static final Parcelable.Creator<Message> CREATOR = new Creator(){
-        @Override
-        public Message createFromParcel(Parcel source) {
-            // TODO Auto-generated method stub
-            // 必须按成员变量声明的顺序读取数据，不然会出现获取数据出错
-            Message message= new Message();
-            message.type = source.readInt();
-            message.from = source.readString();
-            message.content = source.readString();
-            return message;
-        }
-        @Override
-        public Message[] newArray(int size) {
-            // TODO Auto-generated method stub
-            return new Message[size];
-        }
-    };
+    //type == 0xff 代表是加密过的短信，否则是普通短信
+    public int bodyType;
+    public String bodyBody;
 
-    @Override
-    public int describeContents() {
-        return 0;
-    }
-
-    @Override
-    public void writeToParcel(Parcel parcel, int i) {
-        parcel.writeInt(type);
-        parcel.writeString(from);
-        parcel.writeString(content);
+    public void getTypeAndBody(String msgBody){
+        // TODO: 2016/4/25 0025 need to complete the get method
+        bodyType = 1;
+        bodyBody = msgBody;
     }
 }
