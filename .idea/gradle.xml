@@ -12,6 +12,7 @@
             <option value="$PROJECT_DIR$/app" />
             <option value="$PROJECT_DIR$/xfile" />
             <option value="$PROJECT_DIR$/xmsg" />
+            <option value="$PROJECT_DIR$/xmsg2" />
           </set>
         </option>
         <option name="myModules">
@@ -20,6 +21,7 @@
             <option value="$PROJECT_DIR$/app" />
             <option value="$PROJECT_DIR$/xfile" />
             <option value="$PROJECT_DIR$/xmsg" />
+            <option value="$PROJECT_DIR$/xmsg2" />
           </set>
         </option>
       </GradleProjectSettings>

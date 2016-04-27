@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">XMsg2</string>
+    <string name="safe_msg">安全短信</string>
+    <string name="receiver">收件人</string>
+</resources>
