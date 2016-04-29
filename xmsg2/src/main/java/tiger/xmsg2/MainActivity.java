@@ -10,6 +10,7 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 
 import com.lidroid.xutils.ViewUtils;
+import com.lidroid.xutils.util.LogUtils;
 import com.lidroid.xutils.view.annotation.ContentView;
 import com.lidroid.xutils.view.annotation.ViewInject;
 import com.lidroid.xutils.view.annotation.event.OnClick;
@@ -32,7 +33,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void initData() {
         String num = getIntent().getStringExtra(BUNDLE_PHONENUMBER);
-        if (!num.equals("")){
+        if (num != null && !num.equals("")){
             receiver.setText(num);
         }
     }
@@ -75,11 +76,7 @@ public class MainActivity extends AppCompatActivity {
 
     @OnClick(R.id.send)
     private void sendMsg(View view){
-        try {
-            testPrint();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        SMSHelper.sendmessage(receiver.getText().toString(),content.getText().toString(),this);
     }
 
     public void testPrint() throws Exception {
@@ -88,19 +85,19 @@ public class MainActivity extends AppCompatActivity {
         String aPublicKey = DHCoder.getPublicKey(aKeyMap);
         String aPrivateKey = DHCoder.getPrivateKey(aKeyMap);
 
-        test.append("甲方公钥:\r" + aPublicKey);
-        test.append("甲方私钥:\r" + aPrivateKey);
+        LogUtils.d("甲方公钥:\r" + aPublicKey);
+        LogUtils.d("甲方私钥:\r" + aPrivateKey);
 
         // 由甲方公钥产生本地密钥对儿
         Map<String, Object> bKeyMap = DHCoder.initKey(aPublicKey);
         String bPublicKey = DHCoder.getPublicKey(bKeyMap);
         String bPrivateKey = DHCoder.getPrivateKey(bKeyMap);
 
-        test.append("乙方公钥:\r" + bPublicKey);
-        test.append("乙方私钥:\r" + bPrivateKey);
+        LogUtils.d("乙方公钥:\r" + bPublicKey);
+        LogUtils.d("乙方私钥:\r" + bPrivateKey);
 
         String aInput = content.getText().toString();
-        test.append("原文: " + aInput);
+        LogUtils.d("原文: " + aInput);
 
         // 由甲方公钥，乙方私钥构建密文
         byte[] aCode = DHCoder.encrypt(aInput.getBytes(), aPublicKey,
@@ -109,14 +106,14 @@ public class MainActivity extends AppCompatActivity {
         // 由乙方公钥，甲方私钥解密
         byte[] aDecode = DHCoder.decrypt(aCode, bPublicKey, aPrivateKey);
         String aOutput = (new String(aDecode));
-
-        test.append("解密: " + aOutput);
+        LogUtils.d("密文：" + new String(aCode));
+        LogUtils.d("解密: " + aOutput);
 
         assertEquals(aInput, aOutput);
 
-        test.append(" ===============反过来加密解密================== ");
+        LogUtils.d(" ===============反过来加密解密================== ");
         String bInput = "def ";
-        test.append("原文: " + bInput);
+        LogUtils.d("原文: " + bInput);
 
         // 由乙方公钥，甲方私钥构建密文
         byte[] bCode = DHCoder.encrypt(bInput.getBytes(), bPublicKey,
@@ -126,7 +123,8 @@ public class MainActivity extends AppCompatActivity {
         byte[] bDecode = DHCoder.decrypt(bCode, aPublicKey, bPrivateKey);
         String bOutput = (new String(bDecode));
 
-        test.append("解密: " + bOutput);
+        LogUtils.d("密文：" + new String(bCode));
+        LogUtils.d("解密: " + bOutput);
 
         assertEquals(bInput, bOutput);
     }

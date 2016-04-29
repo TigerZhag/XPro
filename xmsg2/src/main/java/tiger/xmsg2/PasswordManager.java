@@ -7,6 +7,8 @@ package tiger.xmsg2;
  * Github: https://github.com/TigerZhag
  */
 public class PasswordManager {
+    public String lastContact;
+
     public static String generateKey(){
         return null;
     }
