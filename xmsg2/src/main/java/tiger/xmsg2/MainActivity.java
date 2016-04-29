@@ -53,7 +53,7 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void afterTextChanged(Editable editable) {
-                send.setEnabled(editable.length() == 11 && content.length() > 0);
+                send.setEnabled(editable.length() > 0 && content.length() > 0);
             }
         });
         content.addTextChangedListener(new TextWatcher() {
@@ -69,14 +69,14 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void afterTextChanged(Editable editable) {
-                send.setEnabled(editable.length() > 0 && receiver.length() == 11);
+                send.setEnabled(editable.length() > 0 && receiver.length() > 0);
             }
         });
     }
 
     @OnClick(R.id.send)
     private void sendMsg(View view){
-        SMSHelper.sendmessage(receiver.getText().toString(),content.getText().toString(),this);
+        SMSHelper.sendActivemessage(receiver.getText().toString(),content.getText().toString(),this);
     }
 
     public void testPrint() throws Exception {

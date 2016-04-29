@@ -9,6 +9,8 @@ import android.content.IntentFilter;
 import android.telephony.SmsManager;
 import android.widget.Toast;
 
+import com.lidroid.xutils.util.LogUtils;
+
 import java.util.List;
 
 /**
@@ -18,10 +20,29 @@ import java.util.List;
  * Github: https://github.com/TigerZhag
  */
 public class SMSHelper {
-    public static void sendmessage(String phoneNumber, String msg, Context context){
-        //协商密钥
+    public static String message = "";
 
+    public static void sendActivemessage(String phoneNumber, String msg, Context context){
+        //生成密钥
+        PasswordManager.generateActiveKey();
+        LogUtils.d("公钥长度：" + PasswordManager.publicKey.length());
+        message = msg;
 
+        sendMsg(phoneNumber,PasswordManager.FLAG_REQUEST_KEY + PasswordManager.publicKey,context);
+    }
+
+    public static void sendPositivemessage(Context context){
+        //生成密钥
+        LogUtils.d("公钥长度：" + PasswordManager.publicKey.length());
+        sendMsg(PasswordManager.lastContact,PasswordManager.FLAG_BACK_KEY + PasswordManager.publicKey,context);
+    }
+
+    public static void sendActualMsg(Context context){
+        //生成密文并发送
+        sendMsg(PasswordManager.lastContact,PasswordManager.encrypeMsg(message),context);
+    }
+
+    public static void sendMsg(String phoneNumber,String msg,Context context){
         //处理返回的发送状态
         String SENT_SMS_ACTION = "SENT_SMS_ACTION";
         Intent sentIntent = new Intent(SENT_SMS_ACTION);
@@ -68,7 +89,7 @@ public class SMSHelper {
         // 拆分短信内容（手机短信长度限制）
         List<String> divideContents = smsManager.divideMessage(msg);
         for (String text : divideContents) {
-            smsManager.sendTextMessage(phoneNumber, null, text, sendIntent, backIntent);
+            smsManager.sendTextMessage(phoneNumber, null, msg, sendIntent, backIntent);
         }
     }
 }
