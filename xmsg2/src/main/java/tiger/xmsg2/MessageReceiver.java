@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.telephony.SmsMessage;
+import android.util.Log;
 import android.widget.Toast;
 
 import com.lidroid.xutils.util.LogUtils;
@@ -16,10 +17,10 @@ import com.lidroid.xutils.util.LogUtils;
  * Github: https://github.com/TigerZhag
  */
 public class MessageReceiver extends BroadcastReceiver {
-
+    private static final String TAG = "MessageReceiver";
     @Override
     public void onReceive(Context context, Intent intent) {
-        Toast.makeText(context, "收到了一条短信---XMsg", Toast.LENGTH_SHORT).show();
+        Log.d(TAG, "onReceive: 收到了一条短信---XMsg");
         if (!intent.getAction().equals("android.provider.Telephony.SMS_RECEIVED")) return;
         //判断短信类型
         StringBuilder sb = new StringBuilder();

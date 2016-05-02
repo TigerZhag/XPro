@@ -2,11 +2,15 @@ package tiger.xmsg2;
 
 import android.util.Base64;
 
+import org.bouncycastle.crypto.generators.DHKeyPairGenerator;
+import org.bouncycastle.jce.provider.BouncyCastleProvider;
+
 import java.security.Key;
 import java.security.KeyFactory;
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
 import java.security.PublicKey;
+import java.security.Security;
 import java.security.spec.PKCS8EncodedKeySpec;
 import java.security.spec.X509EncodedKeySpec;
 import java.util.HashMap;
@@ -37,7 +41,7 @@ public abstract class DHCoder{
      * Keysize must be a multiple of 64, ranging from 512 to 1024 (inclusive).
      * </pre>
      */
-    private static final int KEY_SIZE = 1024;
+    private static final int KEY_SIZE = 512;
 
     /**
      * DH加密下需要一种对称加密算法对数据加密，这里我们使用DES，也可以使用其他对称加密算法。
@@ -53,6 +57,8 @@ public abstract class DHCoder{
      * @throws Exception
      */
     public static Map<String, Object> initKey() throws Exception {
+        Security.addProvider(new BouncyCastleProvider());
+
         KeyPairGenerator keyPairGenerator = KeyPairGenerator
                 .getInstance(ALGORITHM);
         keyPairGenerator.initialize(KEY_SIZE);

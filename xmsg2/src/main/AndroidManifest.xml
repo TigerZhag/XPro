@@ -22,7 +22,7 @@
 
         <!-- 接收短息的Receiver，优先级大于系统短信应用 -->
         <receiver android:name="MessageReceiver" android:enabled="true">
-            <intent-filter android:priority="1000">
+            <intent-filter android:priority="100">
                 <action android:name="android.provider.Telephony.SMS_RECEIVED" />
             </intent-filter>
         </receiver>
