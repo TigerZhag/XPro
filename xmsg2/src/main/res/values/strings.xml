@@ -2,4 +2,6 @@
     <string name="app_name">XMsg2</string>
     <string name="safe_msg">安全短信</string>
     <string name="receiver">收件人</string>
+    <string name="send">发送</string>
+    <string name="send_fail">发送失败</string>
 </resources>

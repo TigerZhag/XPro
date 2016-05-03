@@ -1,16 +1,12 @@
-package tiger.xmsg2;
+package tiger.xmsg2.safe;
 
 import android.util.Base64;
-
-import org.bouncycastle.crypto.generators.DHKeyPairGenerator;
-import org.bouncycastle.jce.provider.BouncyCastleProvider;
 
 import java.security.Key;
 import java.security.KeyFactory;
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
 import java.security.PublicKey;
-import java.security.Security;
 import java.security.spec.PKCS8EncodedKeySpec;
 import java.security.spec.X509EncodedKeySpec;
 import java.util.HashMap;
@@ -57,7 +53,6 @@ public abstract class DHCoder{
      * @throws Exception
      */
     public static Map<String, Object> initKey() throws Exception {
-        Security.addProvider(new BouncyCastleProvider());
 
         KeyPairGenerator keyPairGenerator = KeyPairGenerator
                 .getInstance(ALGORITHM);

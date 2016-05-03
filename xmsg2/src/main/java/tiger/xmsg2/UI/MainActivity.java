@@ -1,12 +1,13 @@
-package tiger.xmsg2;
+package tiger.xmsg2.UI;
 
+import android.content.IntentFilter;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
-import android.widget.ImageButton;
 import android.widget.TextView;
 
 import com.lidroid.xutils.ViewUtils;
@@ -15,20 +16,36 @@ import com.lidroid.xutils.view.annotation.ContentView;
 import com.lidroid.xutils.view.annotation.ViewInject;
 import com.lidroid.xutils.view.annotation.event.OnClick;
 
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+
 import java.util.Map;
+
+import tiger.xmsg2.safe.DHCoder;
+import tiger.xmsg2.control.MessageReceiver;
+import tiger.xmsg2.R;
+import tiger.xmsg2.utils.SMSHelper;
+import tiger.xmsg2.event.SendMessageResultEvent;
+import tiger.xmsg2.widght.circleProgressButton.CircularProgressButton;
 
 import static junit.framework.Assert.assertEquals;
 
 @ContentView(R.layout.activity_main)
 public class MainActivity extends AppCompatActivity {
     private static String BUNDLE_PHONENUMBER = "phoneNumber";
+    private MessageReceiver mReceiver;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         ViewUtils.inject(this);
+        EventBus.getDefault().register(this);
         initData();
         initView();
 
+        mReceiver = new MessageReceiver();
+        IntentFilter mFilter = new IntentFilter();
+        mFilter.addAction("android.provider.Telephony.SMS_RECEIVED");
+        registerReceiver(mReceiver, mFilter);
     }
 
     private void initData() {
@@ -40,6 +57,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void initView() {
         send.setEnabled(false);
+        send.setIndeterminateProgressMode(true);
         receiver.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
@@ -76,7 +94,17 @@ public class MainActivity extends AppCompatActivity {
 
     @OnClick(R.id.send)
     private void sendMsg(View view){
+        send.setProgress(50);
         SMSHelper.sendActivemessage(receiver.getText().toString(),content.getText().toString(),this);
+    }
+
+    @Subscribe
+    public void sendResult(SendMessageResultEvent event){
+        if (event.result) {
+            send.setProgress(100);
+        }else {
+            send.setProgress(-1);
+        }
     }
 
     public void testPrint() throws Exception {
@@ -128,9 +156,19 @@ public class MainActivity extends AppCompatActivity {
 
         assertEquals(bInput, bOutput);
     }
-    
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        Log.d(TAG, "onDestroy: unregisterReceiver");
+        unregisterReceiver(mReceiver);
+        EventBus.getDefault().unregister(this);
+    }
+
+    private static final String TAG = "MainActivity";
+
     @ViewInject(R.id.receiver) private EditText receiver;
     @ViewInject(R.id.content) private EditText content;
-    @ViewInject(R.id.send) private ImageButton send;
+    @ViewInject(R.id.send) private CircularProgressButton send;
     @ViewInject(R.id.test) private TextView test;
 }

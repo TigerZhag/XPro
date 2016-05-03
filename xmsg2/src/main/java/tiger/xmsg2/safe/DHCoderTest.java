@@ -1,6 +1,8 @@
-package tiger.xmsg2;
+package tiger.xmsg2.safe;
 
 import java.util.Map;
+
+import tiger.xmsg2.safe.DHCoder;
 
 import static junit.framework.Assert.assertEquals;
 

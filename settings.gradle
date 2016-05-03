@@ -1,1 +1,1 @@
-include ':app', ':xfile', ':xfile', ':xmsg', ':xmsg2'
+include ':app', ':xfile', ':xfile', ':xmsg', ':xmsg2', ':xapp'

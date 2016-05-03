@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <array name="file_items">
+        <item>加密</item>
+    </array>
+
+    <array name="en_file_items">
+        <item>解密</item>
+    </array>
+</resources>

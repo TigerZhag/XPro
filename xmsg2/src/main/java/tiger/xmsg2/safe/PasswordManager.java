@@ -1,8 +1,10 @@
-package tiger.xmsg2;
+package tiger.xmsg2.safe;
 
 import com.lidroid.xutils.util.LogUtils;
 
 import java.util.Map;
+
+import tiger.xmsg2.safe.DHCoder;
 
 /**
  * Author: Tiger zhang

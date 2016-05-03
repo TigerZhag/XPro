@@ -1,4 +1,4 @@
-package tiger.xmsg2;
+package tiger.xmsg2.control;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -6,9 +6,11 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.telephony.SmsMessage;
 import android.util.Log;
-import android.widget.Toast;
 
 import com.lidroid.xutils.util.LogUtils;
+
+import tiger.xmsg2.safe.PasswordManager;
+import tiger.xmsg2.utils.SMSHelper;
 
 /**
  * Author: Tiger zhang
@@ -48,7 +50,7 @@ public class MessageReceiver extends BroadcastReceiver {
             LogUtils.d("甲方公钥：" + PasswordManager.bPublicKey);
             SMSHelper.sendPositivemessage(context);
         }else if (msg.startsWith(PasswordManager.FLAG_MSG)) {
-            //if 加密短信实体,解密
+            //加密短信实体,解密
             LogUtils.d("收到加密短信：" + msg.substring(PasswordManager.FLAG_MSG.length()));
             LogUtils.d("解密后：" + PasswordManager.decryptMsg(msg.substring(PasswordManager.FLAG_MSG.length())));
         }else {

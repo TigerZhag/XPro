@@ -1,4 +1,4 @@
-package tiger.xmsg2;
+package tiger.xmsg2.utils;
 
 import android.app.Activity;
 import android.app.PendingIntent;
@@ -12,7 +12,12 @@ import android.widget.Toast;
 
 import com.lidroid.xutils.util.LogUtils;
 
+import org.greenrobot.eventbus.EventBus;
+
 import java.util.List;
+
+import tiger.xmsg2.event.SendMessageResultEvent;
+import tiger.xmsg2.safe.PasswordManager;
 
 /**
  * Author: Tiger zhang
@@ -58,12 +63,12 @@ public class SMSHelper {
                 switch (getResultCode()) {
                     case Activity.RESULT_OK:
                         Log.d(TAG, "send message success");
+                        EventBus.getDefault().post(new SendMessageResultEvent(true));
                         break;
                     case SmsManager.RESULT_ERROR_GENERIC_FAILURE:
-                        break;
                     case SmsManager.RESULT_ERROR_RADIO_OFF:
-                        break;
                     case SmsManager.RESULT_ERROR_NULL_PDU:
+                        EventBus.getDefault().post(new SendMessageResultEvent(false));
                         break;
                 }
             }
@@ -78,6 +83,7 @@ public class SMSHelper {
             @Override
             public void onReceive(Context _context, Intent _intent) {
                 Log.d(TAG, "send message receive success");
+                Toast.makeText(context, "对方已成功接收", Toast.LENGTH_SHORT).show();
             }
         }, new IntentFilter(DELIVERED_SMS_ACTION));
 
