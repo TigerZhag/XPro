@@ -1,8 +1,10 @@
 package tiger.xmsg2.UI;
 
+import android.content.Context;
 import android.content.IntentFilter;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.telephony.TelephonyManager;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
@@ -42,10 +44,10 @@ public class MainActivity extends AppCompatActivity {
         initData();
         initView();
 
-        mReceiver = new MessageReceiver();
-        IntentFilter mFilter = new IntentFilter();
-        mFilter.addAction("android.provider.Telephony.SMS_RECEIVED");
-        registerReceiver(mReceiver, mFilter);
+//        mReceiver = new MessageReceiver();
+//        IntentFilter mFilter = new IntentFilter();
+//        mFilter.addAction("android.provider.Telephony.SMS_RECEIVED");
+//        registerReceiver(mReceiver, mFilter);
     }
 
     private void initData() {
@@ -53,6 +55,8 @@ public class MainActivity extends AppCompatActivity {
         if (num != null && !num.equals("")){
             receiver.setText(num);
         }
+        TelephonyManager manager = (TelephonyManager) getSystemService(Context.TELEPHONY_SERVICE);
+        receiver.setText(manager.getLine1Number());
     }
 
     private void initView() {
