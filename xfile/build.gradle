@@ -23,6 +23,12 @@ android {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
     }
+
+    sourceSets {
+        main{
+            java.srcDirs = ['src/main/java','src/main/java-gen']
+        }
+    }
 }
 
 dependencies {
@@ -31,4 +37,5 @@ dependencies {
     compile 'com.android.support:appcompat-v7:23.1.0'
     compile 'com.android.support:design:23.1.0'
     compile 'org.greenrobot:eventbus:3.0.0'
+    compile 'de.greenrobot:greendao:2.1.0'
 }

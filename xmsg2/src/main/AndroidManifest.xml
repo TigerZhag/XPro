@@ -20,12 +20,12 @@
             </intent-filter>
         </activity>
 
-        <!-- 接收短息的Receiver，优先级大于系统短信应用 -->
-        <!--<receiver android:name="MessageReceiver">-->
-            <!--<intent-filter>-->
-                <!--<action android:name="android.provider.Telephony.SMS_RECEIVED" />-->
-            <!--</intent-filter>-->
-        <!--</receiver>-->
+         接收短息的Receiver，优先级大于系统短信应用
+        <receiver android:name="MessageReceiver">
+            <intent-filter>
+                <action android:name="android.provider.Telephony.SMS_RECEIVED" />
+            </intent-filter>
+        </receiver>
 
     </application>
 

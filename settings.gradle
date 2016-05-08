@@ -1,1 +1,1 @@
-include ':app', ':xfile', ':xfile', ':xmsg', ':xmsg2', ':xapp'
+include ':app', ':xfile', ':xfile', ':xmsg', ':xmsg2', ':xapp', ':daogenerator', ':daogenerator'

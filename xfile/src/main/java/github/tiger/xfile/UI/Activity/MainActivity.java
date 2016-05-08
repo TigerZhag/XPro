@@ -25,6 +25,7 @@ import java.util.Arrays;
 import github.tiger.xfile.R;
 import github.tiger.xfile.UI.widght.FilesAdapter;
 import github.tiger.xfile.event.ChangePathEvent;
+import github.tiger.xfile.safe.PasswordManager;
 
 public class MainActivity extends BaseActivity {
 
@@ -92,7 +93,7 @@ public class MainActivity extends BaseActivity {
             if (adapter.backToParent()){
                 //返回上一级目录
             }else {
-                exitApp();
+                finish();
             }
         }
         return true;
@@ -102,6 +103,8 @@ public class MainActivity extends BaseActivity {
     protected void onDestroy() {
         super.onDestroy();
         EventBus.getDefault().unregister(this);
+
+        PasswordManager.encryptKeyStore(this);
     }
 
     @Override
@@ -114,5 +117,6 @@ public class MainActivity extends BaseActivity {
         Intent intent = new Intent(activity,MainActivity.class);
         activity.startActivity(intent);
         activity.overridePendingTransition(R.anim.right_in,R.anim.left_out);
+        activity.finish();
     }
 }

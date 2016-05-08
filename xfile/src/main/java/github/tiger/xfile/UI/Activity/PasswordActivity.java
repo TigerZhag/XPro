@@ -13,7 +13,7 @@ import android.widget.Toast;
 
 import github.tiger.xfile.R;
 import github.tiger.xfile.constants.BundleFlag;
-import github.tiger.xfile.constants.Constant;
+import github.tiger.xfile.control.MyApp;
 import github.tiger.xfile.safe.PasswordManager;
 
 /**
@@ -100,17 +100,18 @@ public class PasswordActivity extends BaseActivity implements View.OnClickListen
                 MainActivity.launch(this);
             }else {
                 //校验密码
-                if (PasswordManager.decrypKeyStore(password.toString())){
+                MyApp.psw = password.toString();
+                if (PasswordManager.decrypKeyStore(this,password.toString())){
                     //检验成功，进入主界面
                     MainActivity.launch(this);
                 }else {
                     //检验失败，重新输入密码
                     Toast.makeText(PasswordActivity.this, R.string.psw_wrong, Toast.LENGTH_SHORT).show();
-                    password.delete(0,password.length() - 1);
                     for (int i = 0; i < password.length() - 1; i++) {
                         RadioButton button = (RadioButton) findViewById(R.id.psw_a + i);
                         button.setChecked(false);
                     }
+                    password.delete(0,password.length());
                 }
             }
         }
@@ -125,7 +126,7 @@ public class PasswordActivity extends BaseActivity implements View.OnClickListen
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         if (keyCode == KeyEvent.KEYCODE_BACK) {
-            exitApp();
+            finish();
             return true;
         }
         return super.onKeyDown(keyCode, event);

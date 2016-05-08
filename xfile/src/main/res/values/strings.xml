@@ -5,4 +5,8 @@
     <string name="hasnot_psw">您还未设置密码，请设置</string>
     <string name="psw_wrong">密码错误，请重新输入</string>
     <string name="exit_toast">再按一次退出</string>
+    <string name="encryptedSuccess">加密成功</string>
+    <string name="encryptedFailure">加密失败</string>
+    <string name="decryptedSuccess">解密成功</string>
+    <string name="decryptedFailure">解密失败</string>
 </resources>

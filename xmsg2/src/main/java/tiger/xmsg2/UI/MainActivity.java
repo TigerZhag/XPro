@@ -1,8 +1,11 @@
 package tiger.xmsg2.UI;
 
+import android.content.Context;
 import android.content.IntentFilter;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
+import android.telephony.TelephonyManager;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
@@ -42,10 +45,6 @@ public class MainActivity extends AppCompatActivity {
         initData();
         initView();
 
-        mReceiver = new MessageReceiver();
-        IntentFilter mFilter = new IntentFilter();
-        mFilter.addAction("android.provider.Telephony.SMS_RECEIVED");
-        registerReceiver(mReceiver, mFilter);
     }
 
     private void initData() {
@@ -90,12 +89,18 @@ public class MainActivity extends AppCompatActivity {
                 send.setEnabled(editable.length() > 0 && receiver.length() > 0);
             }
         });
+
+        TelephonyManager manager = (TelephonyManager) getSystemService(Context.TELEPHONY_SERVICE);
+        receiver.setText(manager.getLine1Number());
     }
 
     @OnClick(R.id.send)
     private void sendMsg(View view){
         send.setProgress(50);
-        SMSHelper.sendActivemessage(receiver.getText().toString(),content.getText().toString(),this);
+        new Thread(()->
+                SMSHelper.sendActivemessage(receiver.getText().toString(),content.getText().toString(),MainActivity.this)
+        ).start();
+
     }
 
     @Subscribe
@@ -105,6 +110,7 @@ public class MainActivity extends AppCompatActivity {
         }else {
             send.setProgress(-1);
         }
+        new Handler().postDelayed(() -> send.setProgress(0),1000);
     }
 
     public void testPrint() throws Exception {
