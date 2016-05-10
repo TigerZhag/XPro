@@ -18,7 +18,8 @@ public class MyApp extends Application {
     public static DaoSession daoSession;
     public static SQLiteDatabase db;
     public static DaoMaster.DevOpenHelper  helper;
-    public static String psw;
+
+    public static String psw = "";
 
     @Override
     public void onCreate() {
@@ -31,6 +32,8 @@ public class MyApp extends Application {
         db = helper.getWritableDatabase();
         daoMaster = new DaoMaster(db);
         daoSession = daoMaster.newSession();
+
+
     }
     public static DaoSession getDaoSession()    {
         return daoSession;

@@ -26,6 +26,7 @@ import github.tiger.xfile.UI.Activity.PasswordActivity;
 import github.tiger.xfile.constants.Constant;
 import github.tiger.xfile.control.MyApp;
 import github.tiger.xfile.event.ChangePathEvent;
+import github.tiger.xfile.safe.KeyStoreManager;
 import github.tiger.xfile.safe.PasswordManager;
 
 /**
@@ -48,9 +49,7 @@ public class FilesAdapter extends RecyclerView.Adapter<FileViewHolder>{
         this.context = context;
         this.files = files;
         parent = files.get(0).getParentFile();
-        Log.d(TAG, "path:" + files.get(0).getAbsolutePath());
     }
-
     @Override
     public int getItemViewType(int position) {
         if (files.get(position).isDirectory()) return DIRECTORY;
@@ -72,6 +71,8 @@ public class FilesAdapter extends RecyclerView.Adapter<FileViewHolder>{
             holder.name.setOnClickListener(v -> {
                 //点击文件夹,进入下一层
                 if (!file.canRead()){
+//                    file.setReadable(true);
+//                    file.setWritable(true);
                     Toast.makeText(v.getContext(), "您没有权限查看此文件夹", Toast.LENGTH_SHORT).show();
                     return;
                 }
@@ -101,6 +102,7 @@ public class FilesAdapter extends RecyclerView.Adapter<FileViewHolder>{
         }else {
             holder.icon.setImageResource(R.drawable.file_icon);
             holder.name.setOnClickListener(v -> {
+                if (!file.canWrite()) file.setWritable(true);
                 //判断是否是加密文件，是则弹出解密
                 if (file.getName().endsWith(Constant.FILE_SUFFIX)){
                     AlertDialog.Builder builder = new AlertDialog.Builder(context);
@@ -110,15 +112,16 @@ public class FilesAdapter extends RecyclerView.Adapter<FileViewHolder>{
                                 //进度
 
                                 //检索种子
-                                KeyDao keyDao = MyApp.getDaoSession().getKeyDao();
-                                Key key = keyDao.queryBuilder().where(KeyDao.Properties.Path.eq(file.getAbsolutePath())).unique();
-                                long id = key.getId();
-                                String encodeKey = key.getKey();
-                                Log.d(TAG, "onBindViewHolder: 揭秘时的key:" + encodeKey);
-                                byte[] encoded = PasswordManager.parseHexStr2Byte(encodeKey);
-                                Log.d(TAG, "onBindViewHolder: keyLength;" + encoded.length);
+//                                KeyDao keyDao = MyApp.getDaoSession().getKeyDao();
+//                                Key key = keyDao.queryBuilder().where(KeyDao.Properties.Path.eq(file.getAbsolutePath())).unique();
+//                                long id = key.getId();
+//                                String encodeKey = key.getKey();
+//                                Log.d(TAG, "onBindViewHolder: 揭秘时的key:" + encodeKey);
+//                                byte[] encoded = PasswordManager.parseHexStr2Byte(encodeKey);
+//                                Log.d(TAG, "onBindViewHolder: keyLength;" + encoded.length);
                                 //解密
-                                SecretKeySpec keySpec = new SecretKeySpec(encoded,"AES");
+
+                                SecretKeySpec keySpec = KeyStoreManager.getKey(file.getAbsolutePath(),v.getContext());//new SecretKeySpec(encoded,"AES");
                                 if (PasswordManager.decrypteFile(file,keySpec)){
                                     //解密成功
                                     Toast.makeText(v.getContext(), R.string.decryptedSuccess, Toast.LENGTH_SHORT).show();
@@ -126,7 +129,7 @@ public class FilesAdapter extends RecyclerView.Adapter<FileViewHolder>{
                                     notifyDataSetChanged();
 
                                     //删除种子
-                                    keyDao.deleteByKey(id);
+//                                    keyDao.deleteByKey(id);
                                 }else {
                                     //解密失败
                                     Toast.makeText(v.getContext(), R.string.decryptedFailure, Toast.LENGTH_SHORT).show();
@@ -155,11 +158,13 @@ public class FilesAdapter extends RecyclerView.Adapter<FileViewHolder>{
                                     notifyDataSetChanged();
 
                                     //保存种子
-                                    KeyDao keyDao = MyApp.getDaoSession().getKeyDao();
-                                    String encodeKey = PasswordManager.parseByte2HexStr(keySpec.getEncoded());
-                                    Key key = new Key(keyDao.count(),file.getAbsolutePath() + Constant.FILE_SUFFIX, encodeKey);
-                                    Log.d(TAG, "onBindViewHolder: encodeKey:" + encodeKey);
-                                    keyDao.insert(key);
+                                    KeyStoreManager.saveKey(file.getAbsolutePath() + Constant.FILE_SUFFIX,keySpec,v.getContext());
+
+//                                    KeyDao keyDao = MyApp.getDaoSession().getKeyDao();
+//                                    String encodeKey = PasswordManager.parseByte2HexStr(keySpec.getEncoded());
+//                                    Key key = new Key(keyDao.count(),file.getAbsolutePath() + Constant.FILE_SUFFIX, encodeKey);
+//                                    Log.d(TAG, "onBindViewHolder: encodeKey:" + encodeKey);
+//                                    keyDao.insert(key);
                                 }else {
                                     //加密失败
                                     Toast.makeText(v.getContext(), R.string.encryptedFailure, Toast.LENGTH_SHORT).show();

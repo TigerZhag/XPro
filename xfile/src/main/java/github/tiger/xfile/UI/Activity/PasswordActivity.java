@@ -14,6 +14,7 @@ import android.widget.Toast;
 import github.tiger.xfile.R;
 import github.tiger.xfile.constants.BundleFlag;
 import github.tiger.xfile.control.MyApp;
+import github.tiger.xfile.safe.KeyStoreManager;
 import github.tiger.xfile.safe.PasswordManager;
 
 /**
@@ -97,11 +98,12 @@ public class PasswordActivity extends BaseActivity implements View.OnClickListen
                 Toast.makeText(PasswordActivity.this, R.string.set_psw_sucess, Toast.LENGTH_SHORT).show();
                 SharedPreferences sharedPreferences = getSharedPreferences(BundleFlag.SP_NAME,MODE_PRIVATE);
                 sharedPreferences.edit().putBoolean(BundleFlag.HAS_PASSWORD,true).commit();
+                KeyStoreManager.createKeyStore(password.toString(),this);
                 MainActivity.launch(this);
             }else {
                 //校验密码
                 MyApp.psw = password.toString();
-                if (PasswordManager.decrypKeyStore(this,password.toString())){
+                if (KeyStoreManager.checkPsw(password.toString(),this)){//PasswordManager.decrypKeyStore(this,password.toString())){
                     //检验成功，进入主界面
                     MainActivity.launch(this);
                 }else {

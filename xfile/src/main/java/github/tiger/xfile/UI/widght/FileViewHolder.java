@@ -16,10 +16,12 @@ import github.tiger.xfile.R;
 public class FileViewHolder extends RecyclerView.ViewHolder{
     public ImageView icon;
     public TextView name;
+    public TextView permission;
 
     public FileViewHolder(View itemView) {
         super(itemView);
         icon = (ImageView) itemView.findViewById(R.id.file_icon);
         name = (TextView) itemView.findViewById(R.id.file_name);
+        permission = (TextView) itemView.findViewById(R.id.file_permission);
     }
 }

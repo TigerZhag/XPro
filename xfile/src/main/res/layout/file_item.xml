@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="horizontal"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="50dp">
 
@@ -15,6 +14,16 @@
         android:id="@+id/file_name"
         android:gravity="center_vertical"
         android:padding="5dp"
+        android:layout_toRightOf="@id/file_icon"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
-</LinearLayout>
+        android:layout_height="25dp" />
+
+    <TextView
+        android:id="@+id/file_permission"
+        android:gravity="center_vertical"
+        android:padding="5dp"
+        android:layout_toRightOf="@id/file_icon"
+        android:layout_below="@id/file_name"
+        android:layout_width="match_parent"
+        android:layout_height="25dp" />
+</RelativeLayout>

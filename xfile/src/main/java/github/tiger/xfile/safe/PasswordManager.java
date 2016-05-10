@@ -36,8 +36,8 @@ import github.tiger.xfile.control.MyApp;
  * use to manage the key of file and keystore
  */
 public class PasswordManager {
-    private static int keySize = 128;
-    private static String Algorithm = "AES";
+    public static int keySize = 128;
+    public static String Algorithm = "AES";
     private static final String TAG = "PasswordManager";
 
     //利用Seed生成密码器

@@ -104,7 +104,7 @@ public class MainActivity extends BaseActivity {
         super.onDestroy();
         EventBus.getDefault().unregister(this);
 
-        PasswordManager.encryptKeyStore(this);
+//        PasswordManager.encryptKeyStore(this);
     }
 
     @Override
