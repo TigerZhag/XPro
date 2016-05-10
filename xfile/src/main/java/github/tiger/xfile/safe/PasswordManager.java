@@ -14,6 +14,8 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.security.InvalidKeyException;
 import java.security.Key;
+import java.security.KeyStore;
+import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 
@@ -258,6 +260,13 @@ public class PasswordManager {
             int high = Integer.parseInt(hexStr.substring(i*2, i*2+1), 16);
             int low = Integer.parseInt(hexStr.substring(i*2+1, i*2+2), 16);
             result[i] = (byte) (high * 16 + low);
+        }
+
+        try {
+            KeyStore keyStore = KeyStore.getInstance(KeyStore.getDefaultType());
+
+        } catch (KeyStoreException e) {
+            e.printStackTrace();
         }
         return result;
     }
