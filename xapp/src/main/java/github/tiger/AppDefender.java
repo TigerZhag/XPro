@@ -1,10 +1,17 @@
 package github.tiger;
 
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.security.InvalidKeyException;
 import java.security.Key;
+import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
+import java.util.zip.Adler32;
 
 import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
@@ -15,124 +22,126 @@ import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
 
 public class AppDefender {
-    public static void main(String[] args){
-        String origin = "SQLite format 3.";
-        System.out.println(origin.getBytes().length);
-        byte[] key = generatekey();
-        System.out.println("key: "+ key);
-        System.out.println("origin: " + origin);
-        String secret = null;
-        try {
-            secret = parseByte2HexStr(encrypt(key,origin.getBytes("GBK")));
-            System.out.println("encrypted: " + secret);
-            String clear = new String(decrypt(key,parseHexStr2Byte(secret)),"GBK");
-            System.out.println("decrypted: "+ clear);
-        } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
-        }
-
-    }
-
-    private static int keySize = 128;
-    private static String Algorithm = "AES";
-    private static final String TAG = "PasswordManager";
-    public static byte[] generatekey(){
-        try {
-            //AES key生产�?
-            KeyGenerator keyGenerator = KeyGenerator.getInstance(Algorithm);
-            //利用用户密码初始化key生产�?
-            keyGenerator.init(keySize, new SecureRandom("4321".getBytes()));
-            //生成密钥
-            SecretKey key = keyGenerator.generateKey();
-            //返回基本编码格式的密钥，如果不支持编码，返回null
-            byte[] encodeFormat = key.getEncoded();
-            //转换成AES专用密钥
-//            SecretKeySpec keySpec = new SecretKeySpec(encodeFormat,Algorithm);
-            return encodeFormat;
-        } catch (NoSuchAlgorithmException e) {
-            e.printStackTrace();
-        }
-
-        return null;
-    }
-
-    public static void saveKey(){
-
-    }
-
-    public static void deleteKey(){
-
-    }
-
-    private static byte[] encrypt(byte[] key,byte[] content){
-        try {
-            SecretKeySpec keySpec = new SecretKeySpec(key,"AES");
-            Cipher cipher = Cipher.getInstance("AES");
-            cipher.init(Cipher.ENCRYPT_MODE,keySpec);
-            return cipher.doFinal(content);
-        } catch (NoSuchAlgorithmException e) {
-            e.printStackTrace();
-        } catch (NoSuchPaddingException e) {
-            e.printStackTrace();
-        } catch (InvalidKeyException e) {
-            e.printStackTrace();
-        } catch (BadPaddingException e) {
-            e.printStackTrace();
-        } catch (IllegalBlockSizeException e) {
-            e.printStackTrace();
-        }
-        return null;
-    }
-
-    private static byte[] decrypt(byte[] key,byte[] content){
-        try {
-            SecretKeySpec keySpec = new SecretKeySpec(key,"AES");
-            Cipher cipher = Cipher.getInstance("AES");
-            cipher.init(Cipher.DECRYPT_MODE,keySpec);
-            return cipher.doFinal(content);
-        } catch (NoSuchAlgorithmException e) {
-            e.printStackTrace();
-        } catch (NoSuchPaddingException e) {
-            e.printStackTrace();
-        } catch (InvalidKeyException e) {
-            e.printStackTrace();
-        } catch (BadPaddingException e) {
-            e.printStackTrace();
-        } catch (IllegalBlockSizeException e) {
-            e.printStackTrace();
-        }
-        return null;
-    }
-
-    /**将二进制转换16进制
-     * @param buf
-     * @return
+    /**
+     * @param args
      */
-    public static String parseByte2HexStr(byte buf[]) {
-        StringBuffer sb = new StringBuffer();
-        for (int i = 0; i < buf.length; i++) {
-            String hex = Integer.toHexString(buf[i] & 0xFF);
-            if (hex.length() == 1) {
-                hex = '0' + hex;
+    public static void main(String[] args) {
+        // TODO Auto-generated method stub
+        try {
+            File payloadSrcFile = new File("g:/payload.apk");
+            File unShellDexFile = new File("g:/unshell.dex");
+            byte[] payloadArray = encrpt(readFileBytes(payloadSrcFile));
+            byte[] unShellDexArray = readFileBytes(unShellDexFile);
+            int payloadLen = payloadArray.length;
+            int unShellDexLen = unShellDexArray.length;
+            int totalLen = payloadLen + unShellDexLen +4;
+            byte[] newdex = new byte[totalLen];
+            //添加解壳代码
+            System.arraycopy(unShellDexArray, 0, newdex, 0, unShellDexLen);
+            //添加加密后的解壳数据
+            System.arraycopy(payloadArray, 0, newdex, unShellDexLen,
+                    payloadLen);
+            //添加解壳数据长度
+            System.arraycopy(intToByte(payloadLen), 0, newdex, totalLen-4, 4);
+            //修改DEX file size文件头
+            fixFileSizeHeader(newdex);
+            //修改DEX SHA1 文件头
+            fixSHA1Header(newdex);
+            //修改DEX CheckSum文件头
+            fixCheckSumHeader(newdex);
+
+
+            String str = "g:/classes.dex";
+            File file = new File(str);
+            if (!file.exists()) {
+                file.createNewFile();
             }
-            sb.append(hex.toUpperCase());
+
+            FileOutputStream localFileOutputStream = new FileOutputStream(str);
+            localFileOutputStream.write(newdex);
+            localFileOutputStream.flush();
+            localFileOutputStream.close();
+
+
+        } catch (Exception e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
         }
-        return sb.toString();
     }
 
-    /**16进制转换为二进制
-     * @param hexStr
-     * @return
-     */
-    public static byte[] parseHexStr2Byte(String hexStr) {
-        if (hexStr.length() < 1)
-            return null;
-        byte[] result = new byte[hexStr.length()/2];
-        for (int i = 0;i< hexStr.length()/2; i++) {
-            int high = Integer.parseInt(hexStr.substring(i*2, i*2+1), 16);
-            int low = Integer.parseInt(hexStr.substring(i*2+1, i*2+2), 16);
-            result[i] = (byte) (high * 16 + low);
+    //直接返回数据，读者可以添加自己加密方法
+    private static byte[] encrpt(byte[] srcdata){
+        return srcdata;
+    }
+
+
+    private static void fixCheckSumHeader(byte[] dexBytes) {
+        Adler32 adler = new Adler32();
+        adler.update(dexBytes, 12, dexBytes.length - 12);
+        long value = adler.getValue();
+        int va = (int) value;
+        byte[] newcs = intToByte(va);
+        byte[] recs = new byte[4];
+        for (int i = 0; i < 4; i++) {
+            recs[i] = newcs[newcs.length - 1 - i];
+            System.out.println(Integer.toHexString(newcs[i]));
         }
-        return result;
+        System.arraycopy(recs, 0, dexBytes, 8, 4);
+        System.out.println(Long.toHexString(value));
+        System.out.println();
+    }
+
+
+    public static byte[] intToByte(int number) {
+        byte[] b = new byte[4];
+        for (int i = 3; i >= 0; i--) {
+            b[i] = (byte) (number % 256);
+            number >>= 8;
+        }
+        return b;
+    }
+
+
+    private static void fixSHA1Header(byte[] dexBytes)
+            throws NoSuchAlgorithmException {
+        MessageDigest md = MessageDigest.getInstance("SHA-1");
+        md.update(dexBytes, 32, dexBytes.length - 32);
+        byte[] newdt = md.digest();
+        System.arraycopy(newdt, 0, dexBytes, 12, 20);
+        String hexstr = "";
+        for (int i = 0; i < newdt.length; i++) {
+            hexstr += Integer.toString((newdt[i] & 0xff) + 0x100, 16)
+                    .substring(1);
+        }
+        System.out.println(hexstr);
+    }
+
+
+    private static void fixFileSizeHeader(byte[] dexBytes) {
+
+
+        byte[] newfs = intToByte(dexBytes.length);
+        System.out.println(Integer.toHexString(dexBytes.length));
+        byte[] refs = new byte[4];
+        for (int i = 0; i < 4; i++) {
+            refs[i] = newfs[newfs.length - 1 - i];
+            System.out.println(Integer.toHexString(newfs[i]));
+        }
+        System.arraycopy(refs, 0, dexBytes, 32, 4);
+    }
+
+
+    private static byte[] readFileBytes(File file) throws IOException {
+        byte[] arrayOfByte = new byte[1024];
+        ByteArrayOutputStream localByteArrayOutputStream = new ByteArrayOutputStream();
+        FileInputStream fis = new FileInputStream(file);
+        while (true) {
+            int i = fis.read(arrayOfByte);
+            if (i != -1) {
+                localByteArrayOutputStream.write(arrayOfByte, 0, i);
+            } else {
+                return localByteArrayOutputStream.toByteArray();
+            }
+        }
     }
 }
