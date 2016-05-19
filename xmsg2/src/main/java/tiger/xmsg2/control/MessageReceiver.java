@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.telephony.SmsMessage;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.lidroid.xutils.util.LogUtils;
 
@@ -36,6 +37,7 @@ public class MessageReceiver extends BroadcastReceiver {
             }
             PasswordManager.lastContact = msg[0].getDisplayOriginatingAddress();
         }
+        Toast.makeText(context, "收到来自：" + PasswordManager.lastContact + "的短信息：" + sb.toString(), Toast.LENGTH_SHORT).show();
         LogUtils.d("收到来自：" + PasswordManager.lastContact +"的短信息：" + sb.toString());
         String msg = sb.toString();
         //if 协商密钥 生成密钥并回复

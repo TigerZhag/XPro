@@ -36,7 +36,6 @@ import static junit.framework.Assert.assertEquals;
 @ContentView(R.layout.activity_main)
 public class MainActivity extends AppCompatActivity {
     private static String BUNDLE_PHONENUMBER = "phoneNumber";
-    private MessageReceiver mReceiver;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -167,7 +166,6 @@ public class MainActivity extends AppCompatActivity {
     protected void onDestroy() {
         super.onDestroy();
         Log.d(TAG, "onDestroy: unregisterReceiver");
-        unregisterReceiver(mReceiver);
         EventBus.getDefault().unregister(this);
     }
 

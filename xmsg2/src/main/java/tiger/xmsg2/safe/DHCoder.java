@@ -33,16 +33,16 @@ public abstract class DHCoder{
      *
      * <pre>
      * DH
-     * Default Keysize 1024
+     * Default Keysize 512
      * Keysize must be a multiple of 64, ranging from 512 to 1024 (inclusive).
      * </pre>
      */
     private static final int KEY_SIZE = 512;
 
     /**
-     * DH加密下需要一种对称加密算法对数据加密，这里我们使用DES，也可以使用其他对称加密算法。
+     * DH加密下需要一种对称加密算法对数据加密，这里我们使用AES，也可以使用其他对称加密算法。
      */
-    public static final String SECRET_ALGORITHM = "DES";
+    public static final String SECRET_ALGORITHM = "AES";
     private static final String PUBLIC_KEY = "DHPublicKey";
     private static final String PRIVATE_KEY = "DHPrivateKey";
 
