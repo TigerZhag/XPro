@@ -1,19 +1,29 @@
 package github.tiger.xfile.control;
 
 import android.app.Application;
+import android.app.Instrumentation;
 import android.content.Context;
+import android.content.pm.ApplicationInfo;
+import android.content.pm.PackageManager;
+import android.os.Bundle;
 
 import java.io.BufferedInputStream;
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.DataInputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.lang.ref.WeakReference;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
 import dalvik.system.DexClassLoader;
+import github.tiger.xfile.constants.RefInvoke;
 
 /**
  * Author: Tiger zhang
@@ -28,7 +38,6 @@ public class ProxyApplication extends Application {
     private String apkFileName;
     private String odexPath;
     private String libPath;
-
 
     protected void attachBaseContext(Context base) {
         super.attachBaseContext(base);
@@ -48,7 +57,7 @@ public class ProxyApplication extends Application {
             // 配置动态加载环境
             Object currentActivityThread = RefInvoke.invokeStaticMethod(
                     "android.app.ActivityThread", "currentActivityThread",
-                    new Class[] {}, new Object[] {});
+                    new Class[]{}, new Object[]{});
             String packageName = this.getPackageName();
             HashMap mPackages = (HashMap) RefInvoke.getFieldOjbect(
                     "android.app.ActivityThread", currentActivityThread,
@@ -85,7 +94,7 @@ public class ProxyApplication extends Application {
                 } else {
                     return;
                 }
-            } catch (NameNotFoundException e) {
+            } catch (PackageManager.NameNotFoundException e) {
                 // TODO Auto-generated catch block
                 e.printStackTrace();
             }
@@ -93,7 +102,7 @@ public class ProxyApplication extends Application {
 
             Object currentActivityThread = RefInvoke.invokeStaticMethod(
                     "android.app.ActivityThread", "currentActivityThread",
-                    new Class[] {}, new Object[] {});
+                    new Class[]{}, new Object[]{});
             Object mBoundApplication = RefInvoke.getFieldOjbect(
                     "android.app.ActivityThread", currentActivityThread,
                     "mBoundApplication");
@@ -119,8 +128,8 @@ public class ProxyApplication extends Application {
             appinfo_In_AppBindData.className = appClassName;
             Application app = (Application) RefInvoke.invokeMethod(
                     "android.app.LoadedApk", "makeApplication", loadedApkInfo,
-                    new Class[] { boolean.class, Instrumentation.class },
-                    new Object[] { false, null });
+                    new Class[]{boolean.class, Instrumentation.class},
+                    new Object[]{false, null});
             RefInvoke.setFieldOjbect("android.app.ActivityThread",
                     "mInitialApplication", currentActivityThread, app);
 
@@ -228,3 +237,4 @@ public class ProxyApplication extends Application {
     private byte[] decrypt(byte[] data) {
         return data;
     }
+}

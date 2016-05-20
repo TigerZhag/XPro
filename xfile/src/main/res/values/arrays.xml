@@ -7,4 +7,10 @@
     <array name="en_file_items">
         <item>解密</item>
     </array>
+
+    <array name="dir_items">
+        <item>加密全部未加密文件</item>
+        <item>解密全部加密文件</item>
+    </array>
+
 </resources>

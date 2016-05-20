@@ -3,6 +3,7 @@ package github.tiger.xfile.safe;
 import android.content.Context;
 import android.provider.Settings;
 import android.telephony.TelephonyManager;
+import android.util.Base64;
 import android.util.Log;
 
 import java.io.BufferedInputStream;
@@ -43,9 +44,10 @@ public class PasswordManager {
     private static final String TAG = "PasswordManager";
 
     //利用Seed生成密码器
-    public static SecretKeySpec generatekey(Context context,String seed) {
+    public static SecretKeySpec generatekey(Context context,String psw) {
         try {
             //AES key生产者
+            String seed = new String(Base64.encode(psw.getBytes(),Base64.DEFAULT));
             KeyGenerator keyGenerator = KeyGenerator.getInstance(Algorithm);
             keyGenerator.init(keySize, new SecureRandom(seed.getBytes()));
             //生成密钥

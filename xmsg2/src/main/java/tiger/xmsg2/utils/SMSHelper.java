@@ -18,6 +18,7 @@ import java.util.List;
 
 import tiger.xmsg2.event.SendMessageResultEvent;
 import tiger.xmsg2.safe.PasswordManager;
+import tiger.xmsg2.safe.Safeparam;
 
 /**
  * Author: Tiger zhang
@@ -30,22 +31,26 @@ public class SMSHelper {
 
     public static void sendActivemessage(String phoneNumber, String msg, Context context){
         //生成密钥
-        PasswordManager.generateActiveKey();
-        LogUtils.d("公钥长度：" + PasswordManager.publicKey.length());
+//        PasswordManager.generateActiveKey();
+//        LogUtils.d("公钥长度：" + PasswordManager.publicKey.length());
+        Safeparam.key = Safeparam.parseByte2HexStr(Safeparam.generateActiveKey());
+
         message = msg;
 //        sendMsg(phoneNumber,PasswordManager.FLAG_REQUEST_KEY,context);
-        sendMsg(phoneNumber,PasswordManager.FLAG_REQUEST_KEY + PasswordManager.publicKey,context);
+
+        sendMsg(phoneNumber,PasswordManager.FLAG_REQUEST_KEY + Safeparam.key,context);
     }
 
     public static void sendPositivemessage(Context context){
         //生成密钥
         LogUtils.d("公钥长度：" + PasswordManager.publicKey.length());
-        sendMsg(PasswordManager.lastContact,PasswordManager.FLAG_BACK_KEY + PasswordManager.publicKey,context);
+        Safeparam.key = Safeparam.parseByte2HexStr(Safeparam.generateActiveKey());;
+        sendMsg(PasswordManager.lastContact,PasswordManager.FLAG_BACK_KEY + Safeparam.key,context);
     }
 
     public static void sendActualMsg(Context context){
         //生成密文并发送
-        sendMsg(PasswordManager.lastContact,PasswordManager.encrypeMsg(message),context);
+        sendMsg(PasswordManager.lastContact,Safeparam.encrypeMsg(message),context);
     }
 
     private static final String TAG = "SMSHelper";

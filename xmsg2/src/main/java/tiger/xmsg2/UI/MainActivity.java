@@ -1,9 +1,15 @@
 package tiger.xmsg2.UI;
 
+import android.Manifest;
 import android.content.Context;
+import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.os.Handler;
+import android.provider.Telephony;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.telephony.TelephonyManager;
 import android.text.Editable;
@@ -35,15 +41,20 @@ import static junit.framework.Assert.assertEquals;
 
 @ContentView(R.layout.activity_main)
 public class MainActivity extends AppCompatActivity {
+    private static final int SEND_SMS_REQUEST_CODE = 0x002;
     private static String BUNDLE_PHONENUMBER = "phoneNumber";
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         ViewUtils.inject(this);
         EventBus.getDefault().register(this);
+
+        Intent intent = new Intent(Telephony.Sms.Intents.ACTION_CHANGE_DEFAULT);
+        intent.putExtra(Telephony.Sms.Intents.EXTRA_PACKAGE_NAME, getPackageName());
+        startActivity(intent);
+
         initData();
         initView();
-
     }
 
     private void initData() {
@@ -89,12 +100,27 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_PHONE_STATE)
+                != PackageManager.PERMISSION_GRANTED) {
+            //申请WRITE_EXTERNAL_STORAGE权限
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
+                    READ_PHONE_STATE_REQUEST_CODE);
+        }
+
         TelephonyManager manager = (TelephonyManager) getSystemService(Context.TELEPHONY_SERVICE);
         receiver.setText(manager.getLine1Number());
     }
+    private static int READ_PHONE_STATE_REQUEST_CODE = 0x001;
 
     @OnClick(R.id.send)
     private void sendMsg(View view){
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.SEND_SMS)
+                != PackageManager.PERMISSION_GRANTED) {
+            //申请WRITE_EXTERNAL_STORAGE权限
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
+                    SEND_SMS_REQUEST_CODE);
+        }
+
         send.setProgress(50);
         new Thread(()->
                 SMSHelper.sendActivemessage(receiver.getText().toString(),content.getText().toString(),MainActivity.this)

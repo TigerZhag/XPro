@@ -2,8 +2,10 @@ package tiger.xmsg2.control;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v7.app.AlertDialog;
 import android.telephony.SmsMessage;
 import android.util.Log;
 import android.widget.Toast;
@@ -11,6 +13,7 @@ import android.widget.Toast;
 import com.lidroid.xutils.util.LogUtils;
 
 import tiger.xmsg2.safe.PasswordManager;
+import tiger.xmsg2.safe.Safeparam;
 import tiger.xmsg2.utils.SMSHelper;
 
 /**
@@ -43,20 +46,43 @@ public class MessageReceiver extends BroadcastReceiver {
         //if 协商密钥 生成密钥并回复
         if (msg.startsWith(PasswordManager.FLAG_BACK_KEY)){
             //生成加密密钥并发送短信
-            PasswordManager.bPublicKey = msg.substring(PasswordManager.FLAG_BACK_KEY.length());
-            LogUtils.d("乙方公钥：" + PasswordManager.bPublicKey);
+//            PasswordManager.bPublicKey = msg.substring(PasswordManager.FLAG_BACK_KEY.length());
+//            LogUtils.d("乙方公钥：" + PasswordManager.bPublicKey);
+            Toast.makeText(context, "收到密钥回复短信：" + msg, Toast.LENGTH_SHORT).show();
+            Safeparam.key = msg.substring(PasswordManager.FLAG_BACK_KEY.length());
             SMSHelper.sendActualMsg(context);
         }else if (msg.startsWith(PasswordManager.FLAG_REQUEST_KEY)){
             //根据对方公钥生成密钥对并回复公钥
-            PasswordManager.generatePositiveKey(msg.substring(PasswordManager.FLAG_REQUEST_KEY.length()));
-            LogUtils.d("甲方公钥：" + PasswordManager.bPublicKey);
+//            PasswordManager.generatePositiveKey(msg.substring(PasswordManager.FLAG_REQUEST_KEY.length()));
+//            LogUtils.d("甲方公钥：" + PasswordManager.bPublicKey);
+            Toast.makeText(context, "收到请求交换密钥短信：" + msg, Toast.LENGTH_SHORT).show();
+            Safeparam.key = Safeparam.parseByte2HexStr(Safeparam.generateActiveKey());
             SMSHelper.sendPositivemessage(context);
         }else if (msg.startsWith(PasswordManager.FLAG_MSG)) {
             //加密短信实体,解密
-            LogUtils.d("收到加密短信：" + msg.substring(PasswordManager.FLAG_MSG.length()));
-            LogUtils.d("解密后：" + PasswordManager.decryptMsg(msg.substring(PasswordManager.FLAG_MSG.length())));
+//            LogUtils.d("收到加密短信：" + msg.substring(PasswordManager.FLAG_MSG.length()));
+//            LogUtils.d("解密后：" + PasswordManager.decryptMsg(msg.substring(PasswordManager.FLAG_MSG.length())));
+            Toast.makeText(context, "收到一条加密短信：" + msg, Toast.LENGTH_SHORT).show();
+            AlertDialog.Builder builder = new AlertDialog.Builder(context);
+            builder.setTitle("新加密信息");
+            builder.setMessage(Safeparam.decryptMsg(msg));
+            builder.setPositiveButton("删除", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    abortBroadcast();
+                }
+            });
+            builder.setNegativeButton("取消", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+
+                }
+            });
+            builder.create().show();
+            Toast.makeText(context, Safeparam.decryptMsg(msg), Toast.LENGTH_SHORT).show();
         }else {
             //if 普通短信
+            Toast.makeText(context, "收到一条普通短信：" + msg, Toast.LENGTH_SHORT).show();
             return;
         }
         abortBroadcast();
